@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Rentabilidad de Productos</h1>
+
+{% if productos %}
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre del Producto</th>
+                <th>Precio Público</th>
+                <th>Costo de Producción</th>
+                <th>Rentabilidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr {% if producto.id == producto_mas_rentable.id %}class="table-success"{% endif %}>
+                    <td>{{ producto.nombre }}</td>
+                    <td>${{ producto.precio_publico }}</td>
+                    <td>${{ producto.calcular_costo() }}</td>
+                    <td>${{ producto.rentabilidad }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="mt-4">Producto Más Rentable</h3>
+    {% if producto_mas_rentable %}
+        <div class="card border-success">
+            <div class="card-body">
+                <h5 class="card-title">{{ producto_mas_rentable.nombre }}</h5>
+                <p class="card-text">Precio Público: ${{ producto_mas_rentable.precio_publico }}</p>
+                <p class="card-text">Costo de Producción: ${{ producto_mas_rentable.calcular_costo() }}</p>
+                <p class="card-text">Rentabilidad: ${{ producto_mas_rentable.rentabilidad }}</p>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <p>No hay productos disponibles.</p>
+{% endif %}
+{% endblock %}
