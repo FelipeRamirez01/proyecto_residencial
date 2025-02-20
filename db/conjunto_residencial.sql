@@ -149,34 +149,6 @@ LOCK TABLES `facturas` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `ingredientes`
---
-
-DROP TABLE IF EXISTS `ingredientes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ingredientes` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `precio` float NOT NULL,
-  `calorias` int NOT NULL,
-  `inventario` int NOT NULL,
-  `es_vegetariano` tinyint(1) DEFAULT NULL,
-  `tipo` varchar(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ingredientes`
---
-
-LOCK TABLES `ingredientes` WRITE;
-/*!40000 ALTER TABLE `ingredientes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ingredientes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `pagos`
 --
 
@@ -220,11 +192,14 @@ CREATE TABLE `pqrs` (
   `id_estado` int NOT NULL,
   `respuesta` text,
   `fecha_respuesta` timestamp NULL DEFAULT NULL,
+  `id_tipo` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
-  KEY `id_estado` (`id_estado`),
+  KEY `id_estado` (`id_estado`) /*!80000 INVISIBLE */,
+  KEY `id_tipo` (`id_tipo`),
   CONSTRAINT `pqrs_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `pqrs_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estados_pqrs` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `pqrs_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estados_pqrs` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `pqrs_ibfk_3` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_pqrs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -235,57 +210,6 @@ CREATE TABLE `pqrs` (
 LOCK TABLES `pqrs` WRITE;
 /*!40000 ALTER TABLE `pqrs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `pqrs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `producto_ingrediente`
---
-
-DROP TABLE IF EXISTS `producto_ingrediente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `producto_ingrediente` (
-  `producto_id` int NOT NULL,
-  `ingrediente_id` int NOT NULL,
-  PRIMARY KEY (`producto_id`,`ingrediente_id`),
-  KEY `ingrediente_id` (`ingrediente_id`),
-  CONSTRAINT `producto_ingrediente_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`),
-  CONSTRAINT `producto_ingrediente_ibfk_2` FOREIGN KEY (`ingrediente_id`) REFERENCES `ingredientes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `producto_ingrediente`
---
-
-LOCK TABLES `producto_ingrediente` WRITE;
-/*!40000 ALTER TABLE `producto_ingrediente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `producto_ingrediente` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `productos`
---
-
-DROP TABLE IF EXISTS `productos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `productos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `precio_publico` float NOT NULL,
-  `tipo` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `productos`
---
-
-LOCK TABLES `productos` WRITE;
-/*!40000 ALTER TABLE `productos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -342,6 +266,31 @@ LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 INSERT INTO `roles` VALUES (2,'Administrador'),(1,'Residente');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tipo_pqrs`
+--
+
+DROP TABLE IF EXISTS `tipo_pqrs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipo_pqrs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tipo_pqrs`
+--
+
+LOCK TABLES `tipo_pqrs` WRITE;
+/*!40000 ALTER TABLE `tipo_pqrs` DISABLE KEYS */;
+INSERT INTO `tipo_pqrs` VALUES (1,'Peticion'),(2,'Queja'),(3,'Reclamos'),(4,'Sugerencias');
+/*!40000 ALTER TABLE `tipo_pqrs` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -407,4 +356,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-19 16:52:11
+-- Dump completed on 2025-02-20  9:58:24
