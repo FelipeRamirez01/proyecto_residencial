@@ -8,3 +8,4 @@ class Usuarios(UserMixin, db.Model):
     contraseña = db.Column(db.String(255), nullable=False)
     telefono = db.Column(db.String(15))
     id_rol = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    id_casa = db.Column(db.Integer, db.ForeignKey('casas.id'), nullable=False)

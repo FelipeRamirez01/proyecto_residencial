@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Facturación{% endblock %}
+
+{% block content %}
+    <h2>Facturas</h2>
+    <p>Aquí puedes ver tus facturas pendientes y pagarlas.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+                <tr>
+                    <td>{{ factura[0] }}</td>
+                    <td>{{ factura[1] }}</td>
+                    <td>${{ factura[2] }}</td>
+                    <td>{{ factura[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

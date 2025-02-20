@@ -72,10 +72,6 @@ def login():
             flash('Usuario o contraseña incorrectos', 'danger')
     return render_template('login.html')
 
-@main.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html', username=current_user.username, rol=current_user.roles.nombre)
 
 @main.route('/logout')
 @login_required
@@ -110,3 +106,21 @@ def admin_dashboard():
 @main.route('/no_autorizado')
 def no_autorizado():
     return render_template('no_autorizado.html'), 403  # Código de estado HTTP 403 (Prohibido)
+
+
+@main.route('/')
+def home():
+    return render_template('home.html')
+
+
+@main.route('/reservas')
+def reservas():
+    return render_template('reservas.html')
+
+@main.route('/pqrs')
+def pqrs():
+    return render_template('pqrs.html')
+
+@main.route('/facturacion')
+def facturacion():
+    return render_template('facturacion.html')
