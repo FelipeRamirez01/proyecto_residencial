@@ -1,0 +1,13 @@
+<h2>Admin</h2>
+<form action="/admin" method="POST">
+    <label>Tipo:</label>
+    <select name="tipo" class="form-control">
+        <option value="Petición">Petición</option>
+        <option value="Queja">Queja</option>
+        <option value="Reclamo">Reclamo</option>
+        <option value="Sugerencia">Sugerencia</option>
+    </select>
+    <label>Descripción:</label>
+    <textarea name="descripcion" class="form-control" required></textarea>
+    <button type="submit" class="btn btn-warning mt-3">Enviar</button>
+</form>

@@ -62,7 +62,7 @@ def login():
                 session['username'] = username
                 session['role'] = 'Administrador'
                 session.permanent = True
-                return redirect(url_for('main.index')) ##administrador - configurar vista
+                return redirect(url_for('main.admin')) ##administrador - configurar vista
             else:
                 session['username'] = username
                 session['role'] = 'Residente'
@@ -124,3 +124,8 @@ def pqrs():
 @main.route('/facturacion')
 def facturacion():
     return render_template('facturacion.html')
+
+@main.route('/admin')
+@login_required
+def admin():
+    return render_template('admin.html')
