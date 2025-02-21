@@ -9,7 +9,6 @@ from datetime import timedelta
 
 main = Blueprint('main', __name__)
 
- ## Login
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -118,6 +117,7 @@ def reservas():
     return render_template('reservas.html')
 
 @main.route('/pqrs')
+@role_required('admin')
 def pqrs():
     return render_template('pqrs.html')
 

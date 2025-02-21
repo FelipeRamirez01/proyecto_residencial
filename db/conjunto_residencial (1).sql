@@ -26,9 +26,12 @@ DROP TABLE IF EXISTS `casas`;
 CREATE TABLE `casas` (
   `id` int NOT NULL AUTO_INCREMENT,
   `numero` varchar(10) NOT NULL,
+  `id_usuario` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `numero` (`numero`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `casas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +40,6 @@ CREATE TABLE `casas` (
 
 LOCK TABLES `casas` WRITE;
 /*!40000 ALTER TABLE `casas` DISABLE KEYS */;
-INSERT INTO `casas` VALUES (1,'1'),(2,'2'),(3,'3');
 /*!40000 ALTER TABLE `casas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,13 +308,10 @@ CREATE TABLE `usuarios` (
   `contraseña` varchar(255) NOT NULL,
   `telefono` varchar(15) DEFAULT NULL,
   `id_rol` int NOT NULL,
-  `id_casa` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `id_rol` (`id_rol`),
-  KEY `id_casa` (`id_casa`),
-  CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`id_casa`) REFERENCES `casas` (`id`)
+  CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -322,8 +321,31 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'admin','prueba@gmail.com','scrypt:32768:8:1$oFnvAodkb387431C$c2826ae32d91387322ce562374dba140b8fc15f5a83ad63af2520aa388ef201f3f0295705e08a3524c819d7e34dddb62e0e4828a2a28f89a415d191c2164b826','32451235',2,1);
+INSERT INTO `usuarios` VALUES (1,'admin','prueba@gmail.com','scrypt:32768:8:1$oFnvAodkb387431C$c2826ae32d91387322ce562374dba140b8fc15f5a83ad63af2520aa388ef201f3f0295705e08a3524c819d7e34dddb62e0e4828a2a28f89a415d191c2164b826','32451235',2);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ventas_totales`
+--
+
+DROP TABLE IF EXISTS `ventas_totales`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ventas_totales` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `acumulado` float DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ventas_totales`
+--
+
+LOCK TABLES `ventas_totales` WRITE;
+/*!40000 ALTER TABLE `ventas_totales` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ventas_totales` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -335,4 +357,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-20 12:41:22
+-- Dump completed on 2025-02-20  9:58:24
