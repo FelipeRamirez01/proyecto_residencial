@@ -3,8 +3,10 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.usuario import Usuarios
 from models.roles import Roles
+from models.casas import Casas
 from app import db, login_manager
 from datetime import timedelta
+from controllers import usuarios
 
 
 main = Blueprint('main', __name__)
@@ -46,7 +48,7 @@ def register():
             db.session.rollback()  # Deshacer la transacción si ocurre un error
             flash(f'Error en el registro: {str(e)}', 'danger')
         
-    return render_template('register.html', roles=Roles.query.all())
+    return render_template('register.html', roles=Roles.query.all(), casas = Casas.query.all())
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -61,12 +63,12 @@ def login():
                 session['username'] = username
                 session['role'] = 'Administrador'
                 session.permanent = True
-                return redirect(url_for('main.admin')) ##administrador - configurar vista
+                return redirect(url_for('usuarios.listar_usuarios')) ##administrador - configurar vista
             else:
                 session['username'] = username
                 session['role'] = 'Residente'
                 session.permanent = True
-                return redirect(url_for('main.index')) ##residente - configurar vista
+                return redirect(url_for('dashboard.index')) ##residente - configurar vista
         else:
             flash('Usuario o contraseña incorrectos', 'danger')
     return render_template('login.html')

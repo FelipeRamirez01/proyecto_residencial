@@ -1,0 +1,35 @@
+{% extends "base_admin.html" %}
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<h2>Editar Usuario</h2>
+
+<form method="POST">
+    <label for="nombre">Nombre:</label>
+    <input type="text" name="nombre" value="{{ usuario.nombre }}" required>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="{{ usuario.email }}" required>
+
+    <label for="telefono">Teléfono:</label>
+    <input type="text" name="telefono" value="{{ usuario.telefono or '' }}">
+
+    <label for="id_rol">Rol:</label>
+    <select name="id_rol">
+        {% for rol in roles %}
+            <option value="{{ rol.id }}" {% if usuario.id_rol == rol.id %}selected{% endif %}>{{ rol.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="id_casa">Casa:</label>
+    <select name="id_casa">
+        {% for casa in casas %}
+            <option value="{{ casa.id }}" {% if usuario.id_casa == casa.id %}selected{% endif %}>{{ casa.numero }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Guardar Cambios</button>
+</form>
+
+<a href="{{ url_for('usuarios.listar_usuarios') }}">Volver</a>
+{% endblock %}

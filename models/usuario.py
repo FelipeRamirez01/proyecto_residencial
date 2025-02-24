@@ -9,3 +9,6 @@ class Usuarios(UserMixin, db.Model):
     telefono = db.Column(db.String(15))
     id_rol = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
     id_casa = db.Column(db.Integer, db.ForeignKey('casas.id'), nullable=False)
+
+    rol = db.relationship("Roles", backref="usuarios")
+    casa = db.relationship("Casas", backref="residentes")

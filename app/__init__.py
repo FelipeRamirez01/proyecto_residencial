@@ -25,7 +25,15 @@ def create_app():
     from controllers.controller import main
     app.register_blueprint(main)
 
-    with app.app_context():
-        db.create_all()
+    from controllers.usuarios import usuarios_bp
+    app.register_blueprint(usuarios_bp)
+
+
+    from controllers.reserva import reserva_bp
+    ##app.register_blueprint(reserva_bp)
+
+
+    #with app.app_context():
+     #   db.create_all()
 
     return app
