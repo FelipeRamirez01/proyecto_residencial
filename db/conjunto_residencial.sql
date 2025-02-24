@@ -18,7 +18,6 @@
 --
 -- Table structure for table `casas`
 --
-USE conjunto_residencial;
 
 DROP TABLE IF EXISTS `casas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -335,4 +334,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-20 12:41:22
+-- Dump completed on 2025-02-23 22:02:51
