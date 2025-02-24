@@ -20,11 +20,12 @@ def load_user(user_id):
 def register():
     if request.method == 'POST':
         try:
-            nombre = request.form['username']
+            nombre = request.form['nombre']
+            email = request.form['email']
             contraseña = request.form['password']
-            id_rol = int(request.form['role_id'])
-            email="prueba@gmail.com"
-            telefono=32451235  # Nuevo campo para seleccionar el rol
+            id_rol = int(request.form['id_rol'])
+            id_casa = int(request.form['id_casa'])
+            telefono= request.form['telefono']
             
             # Verificar si el rol existe
             role = Roles.query.get(id_rol)
@@ -33,17 +34,17 @@ def register():
                 return redirect(url_for('main.register'))
                 
             # Verificar si el usuario ya existe
-            existing_user = Usuarios.query.filter_by(nombre=nombre).first()
+            existing_user = Usuarios.query.filter_by(email=email).first()
             if existing_user:
                 flash('El nombre de usuario ya está en uso', 'warning')
                 return redirect(url_for('main.register'))    
             
             hashed_password = generate_password_hash(contraseña)
-            new_user = Usuarios(nombre=nombre,email=email, contraseña=hashed_password, telefono=telefono, id_rol=id_rol )
+            new_user = Usuarios(nombre=nombre,email=email, contraseña=hashed_password, telefono=telefono, id_rol=id_rol, id_casa=id_casa )
             db.session.add(new_user)
             db.session.commit()
             flash('Usuario registrado con éxito', 'success')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('usuarios.listar_usuarios'))
         except Exception as e:
             db.session.rollback()  # Deshacer la transacción si ocurre un error
             flash(f'Error en el registro: {str(e)}', 'danger')
@@ -55,7 +56,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = Usuarios.query.filter_by(nombre=username).first()
+        user = Usuarios.query.filter_by(email=username).first()
 
         if user and check_password_hash(user.contraseña, password):
             login_user(user)
@@ -63,12 +64,12 @@ def login():
                 session['username'] = username
                 session['role'] = 'Administrador'
                 session.permanent = True
-                return redirect(url_for('usuarios.listar_usuarios')) ##administrador - configurar vista
+                return redirect(url_for('main.home_admin')) ##administrador - configurar vista
             else:
                 session['username'] = username
                 session['role'] = 'Residente'
                 session.permanent = True
-                return redirect(url_for('dashboard.index')) ##residente - configurar vista
+                return redirect(url_for('main.home_usuario')) ##residente - configurar vista
         else:
             flash('Usuario o contraseña incorrectos', 'danger')
     return render_template('login.html')
@@ -113,17 +114,30 @@ def no_autorizado():
 def home():
     return render_template('home.html')
 
+@main.route('/admin')
+@role_required('Administrador')
+@login_required
+def home_admin():
+    return render_template('home_admin.html')
+
+@main.route('/usuario')
+@role_required('Residente')
+@login_required
+def home_usuario():
+    return render_template('home_usuario.html')
 
 @main.route('/reservas')
+@login_required
 def reservas():
     return render_template('reservas.html')
 
 @main.route('/pqrs')
-@role_required('admin')
+@login_required
 def pqrs():
     return render_template('pqrs.html')
 
 @main.route('/facturacion')
+@login_required
 def facturacion():
     return render_template('facturacion.html')
 

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
+from werkzeug.security import generate_password_hash
 from app import db
 from models.usuario import Usuarios
 from models.casas import Casas
@@ -31,6 +32,10 @@ def editar_usuario(id):
         usuario.telefono = request.form["telefono"]
         usuario.id_rol = request.form["id_rol"]
         usuario.id_casa = request.form["id_casa"]
+
+        nueva_contraseña = request.form['contraseña']
+        if nueva_contraseña:
+            usuario.contraseña = generate_password_hash(nueva_contraseña)
 
         db.session.commit()
         flash("Usuario actualizado correctamente.", "success")

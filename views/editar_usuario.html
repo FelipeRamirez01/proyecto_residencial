@@ -11,6 +11,9 @@
     <label for="email">Email:</label>
     <input type="email" name="email" value="{{ usuario.email }}" required>
 
+    <label for="contraseña">Nueva Contraseña (Opcional):</label>
+    <input type="password" name="contraseña" placeholder="Dejar en blanco para no cambiar">
+
     <label for="telefono">Teléfono:</label>
     <input type="text" name="telefono" value="{{ usuario.telefono or '' }}">
 
