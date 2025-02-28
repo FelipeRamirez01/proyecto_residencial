@@ -18,7 +18,7 @@
 --
 -- Table structure for table `casas`
 --
-use conjunto_residencial;
+
 DROP TABLE IF EXISTS `casas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -38,6 +38,31 @@ LOCK TABLES `casas` WRITE;
 /*!40000 ALTER TABLE `casas` DISABLE KEYS */;
 INSERT INTO `casas` VALUES (1,'1'),(2,'2'),(3,'3');
 /*!40000 ALTER TABLE `casas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `estado_reserva`
+--
+
+DROP TABLE IF EXISTS `estado_reserva`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estado_reserva` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estado_reserva`
+--
+
+LOCK TABLES `estado_reserva` WRITE;
+/*!40000 ALTER TABLE `estado_reserva` DISABLE KEYS */;
+INSERT INTO `estado_reserva` VALUES (2,'Confirmada'),(3,'Espera de Aprobación'),(1,'Pendiente');
+/*!40000 ALTER TABLE `estado_reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -91,31 +116,6 @@ INSERT INTO `estados_pqrs` VALUES (2,'En Proceso'),(1,'Registrada'),(3,'Resuelta
 UNLOCK TABLES;
 
 --
--- Table structure for table `estados_reserva`
---
-
-DROP TABLE IF EXISTS `estados_reserva`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `estados_reserva` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `estados_reserva`
---
-
-LOCK TABLES `estados_reserva` WRITE;
-/*!40000 ALTER TABLE `estados_reserva` DISABLE KEYS */;
-INSERT INTO `estados_reserva` VALUES (3,'Cancelada'),(2,'Confirmada'),(1,'Pendiente');
-/*!40000 ALTER TABLE `estados_reserva` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `facturas`
 --
 
@@ -124,17 +124,17 @@ DROP TABLE IF EXISTS `facturas`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facturas` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `id_casa` int NOT NULL,
+  `id_solicitud` int NOT NULL,
+  `id_usuario` int NOT NULL,
   `fecha_emision` date NOT NULL,
-  `fecha_vencimiento` date NOT NULL,
-  `monto` decimal(10,2) NOT NULL,
-  `id_estado` int NOT NULL,
+  `monto` float NOT NULL,
+  `comprobante_pago` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_casa` (`id_casa`),
-  KEY `id_estado` (`id_estado`),
-  CONSTRAINT `facturas_ibfk_1` FOREIGN KEY (`id_casa`) REFERENCES `casas` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `facturas_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estados_factura` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `facturas_ibfk_2_idx` (`id_usuario`),
+  KEY `facturas_ibfk_1_idx` (`id_solicitud`),
+  CONSTRAINT `facturas_ibfk_1` FOREIGN KEY (`id_solicitud`) REFERENCES `reserva` (`id`),
+  CONSTRAINT `facturas_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,6 +143,7 @@ CREATE TABLE `facturas` (
 
 LOCK TABLES `facturas` WRITE;
 /*!40000 ALTER TABLE `facturas` DISABLE KEYS */;
+INSERT INTO `facturas` VALUES (1,1,2,'2025-02-28',50000,NULL),(2,1,2,'2025-02-28',50000,NULL),(3,1,2,'2025-02-28',50000,NULL),(4,1,2,'2025-02-28',50000,NULL),(5,1,2,'2025-02-28',50000,NULL),(6,1,2,'2025-02-28',50000,NULL),(8,1,2,'2025-02-28',50000,NULL),(9,1,2,'2025-02-28',50000,NULL),(10,1,2,'2025-02-28',50000,NULL),(11,1,2,'2025-02-28',50000,NULL);
 /*!40000 ALTER TABLE `facturas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,34 +212,36 @@ LOCK TABLES `pqrs` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `reservas_salon`
+-- Table structure for table `reserva`
 --
 
-DROP TABLE IF EXISTS `reservas_salon`;
+DROP TABLE IF EXISTS `reserva`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `reservas_salon` (
+CREATE TABLE `reserva` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
   `fecha` date NOT NULL,
   `hora_inicio` time NOT NULL,
   `hora_fin` time NOT NULL,
   `id_estado` int NOT NULL,
+  `comprobante_pago` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_estado` (`id_estado`),
-  CONSTRAINT `reservas_salon_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `reservas_salon_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estados_reserva` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_reserva` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `reservas_salon`
+-- Dumping data for table `reserva`
 --
 
-LOCK TABLES `reservas_salon` WRITE;
-/*!40000 ALTER TABLE `reservas_salon` DISABLE KEYS */;
-/*!40000 ALTER TABLE `reservas_salon` ENABLE KEYS */;
+LOCK TABLES `reserva` WRITE;
+/*!40000 ALTER TABLE `reserva` DISABLE KEYS */;
+INSERT INTO `reserva` VALUES (1,2,'2025-02-28','18:00:00','18:59:00',2,'Colsubsidio_Debito_PSE_Febrero.pdf');
+/*!40000 ALTER TABLE `reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -334,4 +337,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-25 14:42:32
+-- Dump completed on 2025-02-28 16:55:57
