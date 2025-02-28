@@ -18,7 +18,7 @@
 --
 -- Table structure for table `casas`
 --
-
+use conjunto_residencial;
 DROP TABLE IF EXISTS `casas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -312,7 +312,7 @@ CREATE TABLE `usuarios` (
   KEY `id_casa` (`id_casa`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`id_casa`) REFERENCES `casas` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -321,7 +321,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'admin','prueba@gmail.com','scrypt:32768:8:1$oFnvAodkb387431C$c2826ae32d91387322ce562374dba140b8fc15f5a83ad63af2520aa388ef201f3f0295705e08a3524c819d7e34dddb62e0e4828a2a28f89a415d191c2164b826','32451235',2,1);
+INSERT INTO `usuarios` VALUES (1,'admin','prueba@gmail.com','scrypt:32768:8:1$oFnvAodkb387431C$c2826ae32d91387322ce562374dba140b8fc15f5a83ad63af2520aa388ef201f3f0295705e08a3524c819d7e34dddb62e0e4828a2a28f89a415d191c2164b826','3245123566',2,1),(2,'prueba','prueba1@gmail.com','scrypt:32768:8:1$AJt13ukYWsCAsheM$76c90bda5fb9a519992cb811aac38a29709fe592752c57610ac398100d331cbd6adf20900f6a37321289e263022dcc65ee9e6f935fbd463d66a68b527721eedf','123',1,2);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -334,4 +334,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-23 22:02:51
+-- Dump completed on 2025-02-25 14:42:32

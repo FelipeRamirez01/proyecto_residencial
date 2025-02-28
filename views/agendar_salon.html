@@ -1,0 +1,28 @@
+{% extends "base_usuario.html" %}
+{% block title %}Agendar Salón Comunal{% endblock %}
+
+{% block content %}
+<h2>Solicitar Uso del Salón Comunal</h2>
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <p class="{{ category }}">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <label for="fecha">Fecha de uso:</label>
+    <input type="date" name="fecha" required>
+
+    <label for="hora_inicio">Hora de inicio:</label>
+    <input type="time" name="hora_inicio" required>
+
+    <label for="hora_fin">Hora de finalización:</label>
+    <input type="time" name="hora_fin" required>
+
+    <button type="submit">Enviar Solicitud</button>
+</form>
+
+{% endblock %}

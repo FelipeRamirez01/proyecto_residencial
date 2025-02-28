@@ -1,0 +1,43 @@
+{% extends 'base_usuario.html' %}
+
+{% block title %}Editar Agenda{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Editar Reserva del Salón Comunal</h2>
+    
+    <form method="POST" action="{{ url_for('reserva.editar_reserva', id=agenda.id) }}" enctype="multipart/form-data">
+        
+        <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha de Reserva:</label>
+            <input type="date" id="fecha" name="fecha" class="form-control" value="{{ agenda.fecha }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="hora_inicio" class="form-label">Hora de Inicio:</label>
+            <input type="time" id="hora_inicio" name="hora_inicio" class="form-control" value="{{ agenda.hora_inicio }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="hora_fin" class="form-label">Hora de Finalización:</label>
+            <input type="time" id="hora_fin" name="hora_fin" class="form-control" value="{{ agenda.hora_fin }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado:</label>
+            <input type="text" class="form-control" value="{{ agenda.estado.nombre }}" disabled>
+        </div>
+        
+        {% if agenda.estado == 'Pendiente' %}
+        <div class="mb-3">
+            <label for="comprobante_pago" class="form-label">Subir Comprobante de Pago:</label>
+            <input type="file" id="comprobante_pago" name="comprobante_pago" class="form-control">
+        </div>
+        {% endif %}
+        
+        <button type="submit" class="btn btn-primary">Actualizar Reserva</button>
+        <a href="{{ url_for('reserva.eliminar_agenda', id=agenda.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta reserva?');">Eliminar</a>
+        <a href="{{ url_for('reserva.generar_factura', id=agenda.id) }}" class="btn btn-warning">Volver a Generar Factura</a>
+    </form>
+</div>
+{% endblock %}

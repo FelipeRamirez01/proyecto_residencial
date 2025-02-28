@@ -1,8 +1,9 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required
 import os
 from datetime import timedelta
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -30,7 +31,11 @@ def create_app():
 
 
     from controllers.reserva import reserva_bp
-    ##app.register_blueprint(reserva_bp)
+    app.register_blueprint(reserva_bp)
+
+    UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'comprobantes')
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}  # Tipos de archivos permitidos
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
     #with app.app_context():
