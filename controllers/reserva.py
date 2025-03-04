@@ -14,7 +14,7 @@ reserva_bp = Blueprint("reserva", __name__)
 def mis_agendas():
     """Mostrar las reservas del usuario."""
     agendas = Reserva.query.filter_by(id_usuario=current_user.id).all()
-    return render_template('mis_agendas.html', agendas=agendas)
+    return render_template('reservas/mis_agendas.html', agendas=agendas)
 
 @reserva_bp.route('/agendar_salon', methods=['GET', 'POST'])
 @login_required
@@ -66,7 +66,7 @@ def agendar_salon():
         flash("Solicitud enviada. Estado: Pendiente. Factura generada.", "success")
         return redirect(url_for('reserva.mis_agendas'))
 
-    return render_template('agendar_salon.html')
+    return render_template('reservas/agendar_salon.html')
 
 #@reserva_bp.route('/ver_solicitudes')
 #@login_required
@@ -85,7 +85,7 @@ def descargar_factura(id):
     "disable-smart-shrinking": ""    # Evita errores de escalado
     }
 
-    html = render_template('factura_pdf.html', factura=factura)
+    html = render_template('reservas/factura_pdf.html', factura=factura)
     pdf = pdfkit.from_string(html, "factura.pdf", options=options)
 
     response = Response(pdf, content_type='application/pdf')
@@ -110,13 +110,7 @@ def generar_factura(id):
     flash("Factura generada nuevamente.", "success")
     return redirect(url_for('reserva.mis_agendas'))
 
-import os
-from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @reserva_bp.route('/editar_reserva/<int:id>', methods=['GET', 'POST'])
@@ -151,7 +145,7 @@ def editar_reserva(id):
         flash("Reserva actualizada correctamente.", "success")
         return redirect(url_for('reserva.mis_agendas'))
 
-    return render_template('editar_reserva.html', agenda=agenda)
+    return render_template('reservas/editar_reserva.html', agenda=agenda)
 
 
 @reserva_bp.route('/eliminar_agenda/<int:id>', methods=['POST'])
@@ -168,6 +162,11 @@ def eliminar_agenda(id):
     db.session.commit()
     flash("Reserva eliminada correctamente.", "success")
     return redirect(url_for('reserva.mis_agendas'))
+
+import os
+from werkzeug.utils import secure_filename
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

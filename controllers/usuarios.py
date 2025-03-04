@@ -15,8 +15,7 @@ def listar_usuarios():
     usuarios = Usuarios.query.all()
     roles = Roles.query.all()
     
-
-    return render_template("usuarios.html", usuarios=usuarios)
+    return render_template("usuarios/usuarios.html", usuarios=usuarios)
 
 # Editar usuario
 @usuarios_bp.route("/editar_usuario/<int:id>", methods=["GET", "POST"])
@@ -41,7 +40,7 @@ def editar_usuario(id):
         flash("Usuario actualizado correctamente.", "success")
         return redirect(url_for("usuarios.listar_usuarios"))
 
-    return render_template("editar_usuario.html", usuario=usuario, roles=roles, casas=casas)
+    return render_template("usuarios/editar_usuario.html", usuario=usuario, roles=roles, casas=casas)
 
 # Eliminar usuario
 @usuarios_bp.route("/eliminar_usuario/<int:id>", methods=["POST"])

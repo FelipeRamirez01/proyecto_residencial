@@ -12,6 +12,10 @@ from controllers import usuarios
 main = Blueprint('main', __name__)
 
 
+@main.route('/')
+def home():
+    return render_template('auth/home.html')
+
 @login_manager.user_loader
 def load_user(user_id):
     return Usuarios.query.get(int(user_id))
@@ -49,7 +53,7 @@ def register():
             db.session.rollback()  # Deshacer la transacción si ocurre un error
             flash(f'Error en el registro: {str(e)}', 'danger')
         
-    return render_template('register.html', roles=Roles.query.all(), casas = Casas.query.all())
+    return render_template('auth/register.html', roles=Roles.query.all(), casas = Casas.query.all())
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -72,7 +76,7 @@ def login():
                 return redirect(url_for('main.home_usuario')) ##residente - configurar vista
         else:
             flash('Usuario o contraseña incorrectos', 'danger')
-    return render_template('login.html')
+    return render_template('auth/login.html')
 
 
 @main.route('/logout')
@@ -110,21 +114,19 @@ def no_autorizado():
     return render_template('no_autorizado.html'), 403  # Código de estado HTTP 403 (Prohibido)
 
 
-@main.route('/')
-def home():
-    return render_template('home.html')
+
 
 @main.route('/admin')
 @role_required('Administrador')
 @login_required
 def home_admin():
-    return render_template('home_admin.html')
+    return render_template('auth/home_admin.html')
 
 @main.route('/usuario')
 @role_required('Residente')
 @login_required
 def home_usuario():
-    return render_template('home_usuario.html')
+    return render_template('auth/home_usuario.html')
 
 @main.route('/reservas')
 @login_required

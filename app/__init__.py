@@ -27,11 +27,10 @@ def create_app():
     app.register_blueprint(main)
 
     from controllers.usuarios import usuarios_bp
-    app.register_blueprint(usuarios_bp)
-
+    app.register_blueprint(usuarios_bp, url_prefix='/usuario')
 
     from controllers.reserva import reserva_bp
-    app.register_blueprint(reserva_bp)
+    app.register_blueprint(reserva_bp, url_prefix='/reserva')
 
     UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'comprobantes')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}  # Tipos de archivos permitidos
