@@ -9,7 +9,7 @@ from models.roles import Roles
 usuarios_bp = Blueprint("usuarios", __name__)
 
 # Mostrar lista de usuarios
-@usuarios_bp.route("/usuarios")
+@usuarios_bp.route("/")
 @login_required
 def listar_usuarios():
     usuarios = Usuarios.query.all()

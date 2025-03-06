@@ -27,13 +27,17 @@ def create_app():
     app.register_blueprint(main)
 
     from controllers.usuarios import usuarios_bp
-    app.register_blueprint(usuarios_bp, url_prefix='/usuario')
+    app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
 
     from controllers.reserva import reserva_bp
     app.register_blueprint(reserva_bp, url_prefix='/reserva')
 
-    UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'comprobantes')
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}  # Tipos de archivos permitidos
+    from controllers.admin_reservas import admin_reservas_bp
+    app.register_blueprint(admin_reservas_bp, url_prefix='/admin')
+
+
+    #UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'comprobantes')
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/comprobantes')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 

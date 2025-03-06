@@ -6,6 +6,7 @@ from app import db, login_manager
 from models.reserva import Reserva
 from models.reserva import Facturas
 from datetime import datetime, time
+import uuid
 
 reserva_bp = Blueprint("reserva", __name__)
 
@@ -34,7 +35,7 @@ def agendar_salon():
             Reserva.fecha == fecha_dt,
             Reserva.hora_inicio < hora_fin_dt,
             Reserva.hora_fin > hora_inicio_dt,
-            Reserva.id_estado != 3  # No considerar solicitudes "Resueltas" (canceladas)
+            Reserva.id_estado != 3  # No considerar solicitudes "Espera de Aprobacion"
         ).first()
 
         if conflicto:
@@ -111,8 +112,6 @@ def generar_factura(id):
     return redirect(url_for('reserva.mis_agendas'))
 
 
-
-
 @reserva_bp.route('/editar_reserva/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_reserva(id):
@@ -171,10 +170,10 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@reserva_bp.route('/subir_comprobante/<int:id>', methods=['POST'])
+""" @reserva_bp.route('/subir_comprobante/<int:id>', methods=['POST'])
 @login_required
 def subir_comprobante(id):
-    """Subir el comprobante de pago y cambiar el estado de la reserva."""
+    "Subir el comprobante de pago y cambiar el estado de la reserva."
     factura = Reserva.query.filter_by(id=id).first()
 
 
@@ -203,9 +202,48 @@ def subir_comprobante(id):
     else:
         flash("Formato de archivo no permitido.", "danger")
 
+    return redirect(url_for('reserva.mis_agendas')) """
+
+
+@reserva_bp.route('/subir_comprobante/<int:id>', methods=['POST'])
+@login_required
+def subir_comprobante(id):
+    reserva = Reserva.query.filter_by(id=id).first()
+    
+    if 'comprobante_pago' not in request.files:
+        flash("No se seleccionó ningún archivo.", "danger")
+        return redirect(url_for('reserva.mis_agendas'))
+
+    file = request.files['comprobante_pago']
+    
+    if file.filename == '':
+        flash("Nombre de archivo inválido.", "danger")
+        return redirect(url_for('reserva.mis_agendas'))
+
+    if file and allowed_file(file.filename):
+        file_ext = file.filename.rsplit('.', 1)[1].lower()  # Extrae la extensión
+        unique_filename = f"comprobante_{id}_{uuid.uuid4().hex}.{file_ext}"  # Nombre único con UUID
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(filepath)
+        
+        # Si ya existe un comprobante previo, eliminarlo para evitar acumulación de archivos
+        if reserva.comprobante_pago:
+            old_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], reserva.comprobante_pago)
+            if os.path.exists(old_file_path):
+                os.remove(old_file_path)
+        
+        reserva.comprobante_pago = unique_filename
+        db.session.commit()
+
+        flash("Comprobante subido correctamente.", "success")
+    else:
+        flash("Formato de archivo no permitido.", "danger")
+    
     return redirect(url_for('reserva.mis_agendas'))
 
 @reserva_bp.route('/comprobante/<filename>')
 def ver_comprobante(filename):
-    comprobantes_dir = os.path.join(current_app.root_path, 'static', 'comprobantes')
+    comprobantes_dir = current_app.config['UPLOAD_FOLDER']
     return send_from_directory(comprobantes_dir, filename)
+
+

@@ -1,0 +1,62 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Administrar Reservas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Administración de Reservas</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Estado</th>
+                <th>Comprobante</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+            <tr>
+                <td>{{ reserva.id }}</td>
+                <td>{{ reserva.usuario.nombre }}</td>
+                <td>{{ reserva.fecha }}</td>
+                <td>{{ reserva.hora_inicio }}</td>
+                <td>{{ reserva.hora_fin }}</td>
+                <td><span class="badge {% if reserva.estado == 'Pendiente' %}bg-warning{% elif reserva.estado == 'Aprobado' %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ reserva.estado.nombre }}</span>
+                </td>
+                <td>
+                    {% if reserva.comprobante_pago %}
+                        <a href="{{ url_for('admin_reservas.ver_comprobante', filename=reserva.comprobante_pago) }}" target="_blank">Ver Comprobante</a>
+                    {% else %}
+                        <span class="text-muted">No Subido</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if reserva.id_estado == 1 %}
+                        <form action="{{ url_for('admin_reservas.aprobar_reserva', id=reserva.id) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
+                        </form>
+                    {% else %}
+                        <span class="text-muted">Aprobado</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
