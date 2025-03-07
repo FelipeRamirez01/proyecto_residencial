@@ -31,7 +31,7 @@
         <td>{{ usuario.email }}</td>
         <td>{{ usuario.telefono or 'No registrado' }}</td>
         <td>{{ usuario.rol.nombre if usuario.rol else 'Sin rol asignado' }}</td>
-        <td>{{ usuario.id_casa }}</td>
+        <td>{{ usuario.casa.numero }}</td>
         <td>
             <a href="{{ url_for('usuarios.editar_usuario', id=usuario.id) }}">Editar</a>
             <form action="{{ url_for('usuarios.eliminar_usuario', id=usuario.id) }}" method="POST" style="display:inline;">

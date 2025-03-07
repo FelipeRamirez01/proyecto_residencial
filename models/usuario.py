@@ -11,4 +11,4 @@ class Usuarios(UserMixin, db.Model):
     id_casa = db.Column(db.Integer, db.ForeignKey('casas.id'), nullable=False)
 
     rol = db.relationship("Roles", backref="usuarios")
-    casa = db.relationship("Casas", backref="residentes")
+    casa = db.relationship("Casas", backref="usuario")

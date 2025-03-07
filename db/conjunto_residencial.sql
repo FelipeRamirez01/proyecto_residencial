@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `casas`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `casas` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `numero` varchar(10) NOT NULL,
+  `numero` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `casas` (
 
 LOCK TABLES `casas` WRITE;
 /*!40000 ALTER TABLE `casas` DISABLE KEYS */;
-INSERT INTO `casas` VALUES (1,'1'),(2,'2'),(3,'3');
+INSERT INTO `casas` VALUES (1,'Torre 1 -101'),(2,'Torre 1 -102'),(3,'Torre 1 -103'),(4,'Torre 1 -104'),(5,'Torre 1 -201'),(6,'Torre 1 -202'),(7,'Torre 1 -203'),(8,'Torre 1 -204'),(9,'Torre 1 -301'),(10,'Torre 1 -302'),(11,'Torre 1 -303'),(12,'Torre 1 -304'),(13,'Torre 1 -401'),(14,'Torre 1 -402'),(15,'Torre 1 -403'),(16,'Torre 1 -404'),(17,'Torre 1 -501'),(18,'Torre 1 -502'),(19,'Torre 1 -503'),(20,'Torre 1 -504');
 /*!40000 ALTER TABLE `casas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,7 +134,7 @@ CREATE TABLE `facturas` (
   KEY `facturas_ibfk_1_idx` (`id_solicitud`),
   CONSTRAINT `facturas_ibfk_1` FOREIGN KEY (`id_solicitud`) REFERENCES `reserva` (`id`),
   CONSTRAINT `facturas_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,7 +143,7 @@ CREATE TABLE `facturas` (
 
 LOCK TABLES `facturas` WRITE;
 /*!40000 ALTER TABLE `facturas` DISABLE KEYS */;
-INSERT INTO `facturas` VALUES (1,1,2,'2025-02-28',50000,NULL),(2,1,2,'2025-02-28',50000,NULL),(3,1,2,'2025-02-28',50000,NULL),(4,1,2,'2025-02-28',50000,NULL),(5,1,2,'2025-02-28',50000,NULL),(6,1,2,'2025-02-28',50000,NULL),(8,1,2,'2025-02-28',50000,NULL),(9,1,2,'2025-02-28',50000,NULL),(10,1,2,'2025-02-28',50000,NULL),(11,1,2,'2025-02-28',50000,NULL);
+INSERT INTO `facturas` VALUES (1,1,2,'2025-02-28',50000,NULL),(2,1,2,'2025-02-28',50000,NULL),(3,1,2,'2025-02-28',50000,NULL),(4,1,2,'2025-02-28',50000,NULL),(5,1,2,'2025-02-28',50000,NULL),(6,1,2,'2025-02-28',50000,NULL),(8,1,2,'2025-02-28',50000,NULL),(9,1,2,'2025-02-28',50000,NULL),(10,1,2,'2025-02-28',50000,NULL),(11,1,2,'2025-02-28',50000,NULL),(25,8,2,'2025-03-03',50000,NULL),(26,9,2,'2025-03-06',50000,NULL);
 /*!40000 ALTER TABLE `facturas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,7 +231,7 @@ CREATE TABLE `reserva` (
   KEY `id_estado` (`id_estado`),
   CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_reserva` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -240,7 +240,7 @@ CREATE TABLE `reserva` (
 
 LOCK TABLES `reserva` WRITE;
 /*!40000 ALTER TABLE `reserva` DISABLE KEYS */;
-INSERT INTO `reserva` VALUES (1,2,'2025-02-28','18:00:00','18:59:00',2,'Colsubsidio_Debito_PSE_Febrero.pdf');
+INSERT INTO `reserva` VALUES (1,2,'2025-02-28','18:00:00','18:59:00',2,'Colsubsidio_Debito_PSE_Febrero.pdf'),(8,2,'2025-03-04','10:00:00','12:00:00',2,'EndPoints.pdf'),(9,2,'2025-03-12','12:43:00','13:43:00',2,'EndPoints1.pdf');
 /*!40000 ALTER TABLE `reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -337,4 +337,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-28 16:55:57
+-- Dump completed on 2025-03-06 21:33:18

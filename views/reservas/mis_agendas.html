@@ -32,9 +32,9 @@
             {% if agenda.id_estado == 1 %}
                 Pendiente
             {% elif agenda.id_estado == 2 %}
-                Espera de Aprobación
-            {% elif agenda.id_estado == 3 %}
                 Aprobada
+            {% elif agenda.id_estado == 3 %}
+                Espera de Aprobación
             {% else %}
                 Rechazada
             {% endif %}

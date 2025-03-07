@@ -46,7 +46,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if reserva.id_estado == 1 %}
+                    {% if reserva.id_estado == 3 %}
                         <form action="{{ url_for('admin_reservas.aprobar_reserva', id=reserva.id) }}" method="post" class="d-inline">
                             <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
                         </form>

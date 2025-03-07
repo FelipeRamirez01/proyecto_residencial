@@ -69,12 +69,6 @@ def agendar_salon():
 
     return render_template('reservas/agendar_salon.html')
 
-#@reserva_bp.route('/ver_solicitudes')
-#@login_required
-#def ver_solicitudes():
-    solicitudes = Reserva.query.filter_by(id_usuario=current_user.id).all()
-    return render_template('ver_solicitudes.html', solicitudes=solicitudes)
-
 
 @reserva_bp.route('/descargar_factura/<int:id>')
 @login_required
@@ -96,7 +90,7 @@ def descargar_factura(id):
 @reserva_bp.route('/generar_factura/<int:id>', methods=['POST'])
 @login_required
 def generar_factura(id):
-    """Volver a generar la factura."""
+    "Volver a generar la factura."
     agenda = Reserva.query.get_or_404(id)
 
     nueva_factura = Facturas(
@@ -110,7 +104,7 @@ def generar_factura(id):
 
     flash("Factura generada nuevamente.", "success")
     return redirect(url_for('reserva.mis_agendas'))
-
+ 
 
 @reserva_bp.route('/editar_reserva/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -170,51 +164,16 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-""" @reserva_bp.route('/subir_comprobante/<int:id>', methods=['POST'])
-@login_required
-def subir_comprobante(id):
-    "Subir el comprobante de pago y cambiar el estado de la reserva."
-    factura = Reserva.query.filter_by(id=id).first()
-
-
-    if 'comprobante' not in request.files:
-        flash("No seleccionaste un archivo.", "danger")
-        return redirect(url_for('mis_agendas'))
-
-    file = request.files['comprobante']
-
-    if file.filename == '':
-        flash("Nombre de archivo inválido.", "danger")
-        return redirect(url_for('mis_agendas'))
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-
-        # Guardar la ruta en la base de datos y cambiar estado
-        factura.comprobante_pago = filename
-        #solicitud = Reserva.query.get_or_404(id)
-        factura.id_estado = 2  # Estado: "Espera de Aprobación"
-        db.session.commit()
-
-        flash("Comprobante subido. Solicitud en espera de aprobación.", "success")
-    else:
-        flash("Formato de archivo no permitido.", "danger")
-
-    return redirect(url_for('reserva.mis_agendas')) """
-
-
 @reserva_bp.route('/subir_comprobante/<int:id>', methods=['POST'])
 @login_required
 def subir_comprobante(id):
     reserva = Reserva.query.filter_by(id=id).first()
     
-    if 'comprobante_pago' not in request.files:
+    if 'comprobante' not in request.files:
         flash("No se seleccionó ningún archivo.", "danger")
         return redirect(url_for('reserva.mis_agendas'))
 
-    file = request.files['comprobante_pago']
+    file = request.files['comprobante']
     
     if file.filename == '':
         flash("Nombre de archivo inválido.", "danger")

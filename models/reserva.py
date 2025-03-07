@@ -6,6 +6,8 @@ class Estado_reserva(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(20), unique=True, nullable=False)
 
+
+
 class Reserva(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
@@ -29,3 +31,5 @@ class Facturas(db.Model):
 
     solicitud = db.relationship("Reserva", backref="factura")
     usuario = db.relationship("Usuarios", backref="facturas")
+
+
