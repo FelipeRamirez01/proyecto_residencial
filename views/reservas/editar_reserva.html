@@ -37,7 +37,7 @@
         
         <button type="submit" class="btn btn-primary">Actualizar Reserva</button>
         <a href="{{ url_for('reserva.eliminar_agenda', id=agenda.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta reserva?');">Eliminar</a>
-        <a href="{{ url_for('reserva.generar_factura', id=agenda.id) }}" class="btn btn-warning">Volver a Generar Factura</a>
+        
     </form>
 </div>
 {% endblock %}

@@ -1,12 +1,14 @@
-from flask import Blueprint, Response, render_template, request, redirect, url_for, flash, current_app, send_from_directory
+from flask import Blueprint, Response, render_template, request, redirect, url_for, flash, current_app, send_from_directory, send_file
 from flask_login import login_required, current_user
-import pdfkit 
-pdfkit_config = pdfkit.configuration(wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe")
 from app import db, login_manager
 from models.reserva import Reserva
 from models.reserva import Facturas
 from datetime import datetime, time
 import uuid
+import os
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.graphics.barcode import code128
 
 reserva_bp = Blueprint("reserva", __name__)
 
@@ -70,40 +72,42 @@ def agendar_salon():
     return render_template('reservas/agendar_salon.html')
 
 
-@reserva_bp.route('/descargar_factura/<int:id>')
+# Ruta donde se guardarán los PDFs
+FACTURAS_DIR = "static/facturas"
+os.makedirs(FACTURAS_DIR, exist_ok=True)
+
+def generar_factura(usuario, reserva, monto):
+    """Genera un PDF con la factura de la reserva del salón comunal."""
+    archivo_pdf = os.path.join(FACTURAS_DIR, f"factura_{reserva.id}.pdf")
+    c = canvas.Canvas(archivo_pdf, pagesize=letter)
+    
+    # Agregar título y datos
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(200, 750, "Factura - Conjunto Residencial XYZ")
+    
+    c.setFont("Helvetica", 12)
+    c.drawString(100, 720, f"Nombre: {usuario.nombre}")
+    c.drawString(100, 700, f"Casa: {usuario.id_casa}")
+    c.drawString(100, 680, f"Fecha de reserva: {reserva.fecha}")
+    c.drawString(100, 660, f"Hora: {reserva.hora_inicio} - {reserva.hora_fin}")
+    c.drawString(100, 640, f"Valor a pagar: ${monto}")
+
+    # Agregar código de barras con el ID de la reserva
+    barcode = code128.Code128(str(reserva.id), barHeight=20, barWidth=1.2)
+    barcode.drawOn(c, 200, 500)
+
+    # Guardar el PDF
+    c.save()
+    return archivo_pdf
+
+@reserva_bp.route('/descargar_factura/<int:id>', methods=['POST'])
 @login_required
-def descargar_factura(id):
-    factura = Facturas.query.get_or_404(id)
-
-    options = {
-    "enable-local-file-access": "",  # Permite acceder a archivos locales
-    "disable-smart-shrinking": ""    # Evita errores de escalado
-    }
-
-    html = render_template('reservas/factura_pdf.html', factura=factura)
-    pdf = pdfkit.from_string(html, "factura.pdf", options=options)
-
-    response = Response(pdf, content_type='application/pdf')
-    response.headers['Content-Disposition'] = f'inline; filename=factura_{factura.id}.pdf'
-    return response
-
-@reserva_bp.route('/generar_factura/<int:id>', methods=['POST'])
-@login_required
-def generar_factura(id):
-    "Volver a generar la factura."
-    agenda = Reserva.query.get_or_404(id)
-
-    nueva_factura = Facturas(
-        id_solicitud=agenda.id,
-        id_usuario=current_user.id,
-        monto=50000,  # Monto del alquiler del salón
-        fecha_emision=datetime.now()
-    )
-    db.session.add(nueva_factura)
-    db.session.commit()
-
-    flash("Factura generada nuevamente.", "success")
-    return redirect(url_for('reserva.mis_agendas'))
+def descargar_factura(reserva_id):
+    """Permite descargar la factura de una reserva."""
+    factura_path = os.path.join(FACTURAS_DIR, f"factura_{reserva_id}.pdf")
+    if os.path.exists(factura_path):
+        return send_file(factura_path, as_attachment=True)
+    return "Factura no encontrada", 404
  
 
 @reserva_bp.route('/editar_reserva/<int:id>', methods=['GET', 'POST'])
@@ -149,7 +153,7 @@ def eliminar_agenda(id):
 
     if agenda.id_estado != 1:  # Solo se pueden eliminar reservas pendientes
         flash("No se puede eliminar una reserva ya aprobada.", "danger")
-        return redirect(url_for('mis_agendas'))
+        return redirect(url_for('reserva.mis_agendas'))
 
     db.session.delete(agenda)
     db.session.commit()

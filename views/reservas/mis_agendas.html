@@ -46,10 +46,7 @@
                     <button type="submit">Eliminar</button>
                 </form>
             {% endif %}
-            
-            <form method="POST" action="{{ url_for('reserva.descargar_factura', id=agenda.id) }}" style="display:inline;">
-                <button type="submit">Generar Factura</button>
-            </form>
+         
             
             {% if agenda.id_estado == 1 %}
                 <form method="POST" action="{{ url_for('reserva.subir_comprobante', id=agenda.id) }}" enctype="multipart/form-data" style="display:inline;">
