@@ -14,13 +14,16 @@
         </div>
         
         <div class="mb-3">
-            <label for="hora_inicio" class="form-label">Hora de Inicio:</label>
-            <input type="time" id="hora_inicio" name="hora_inicio" class="form-control" value="{{ agenda.hora_inicio }}" required>
+            <label for="horario" class="form-label">Horario:</label>
+            <select id="horario" name="horario" class="form-control" required>
+                <option value="Diurno" {% if agenda.horario == 'Diurno' %}selected{% endif %}>Diurno (8 AM - 3 PM)</option>
+                <option value="Noche" {% if agenda.horario == 'Noche' %}selected{% endif %}>Noche (3 PM - 8 PM)</option>
+            </select>
         </div>
         
         <div class="mb-3">
-            <label for="hora_fin" class="form-label">Hora de Finalización:</label>
-            <input type="time" id="hora_fin" name="hora_fin" class="form-control" value="{{ agenda.hora_fin }}" required>
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" class="form-control" maxlength="300" required>{{ agenda.descripcion }}</textarea>
         </div>
         
         <div class="mb-3">

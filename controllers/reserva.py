@@ -1,8 +1,9 @@
-from flask import Blueprint, Response, render_template, request, redirect, url_for, flash, current_app, send_from_directory, send_file
+from flask import Blueprint, Response, render_template, request, redirect, url_for, flash, send_file, current_app, send_from_directory, send_file
 from flask_login import login_required, current_user
 from app import db, login_manager
 from models.reserva import Reserva
 from models.reserva import Facturas
+from models.usuario import Usuarios
 from datetime import datetime, time
 import uuid
 import os
@@ -24,41 +25,45 @@ def mis_agendas():
 def agendar_salon():
     if request.method == 'POST':
         fecha = request.form['fecha']
-        hora_inicio = request.form['hora_inicio']
-        hora_fin = request.form['hora_fin']
+        horario = request.form['horario']
+        descripcion = request.form['descripcion']
+
 
         # Convertir valores a datetime
         fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
-        hora_inicio_dt = datetime.strptime(hora_inicio, "%H:%M").time()
-        hora_fin_dt = datetime.strptime(hora_fin, "%H:%M").time()
 
-        # VALIDAR DISPONIBILIDAD: Buscar reservas que coincidan en fecha y hora
-        conflicto = Reserva.query.filter(
-            Reserva.fecha == fecha_dt,
-            Reserva.hora_inicio < hora_fin_dt,
-            Reserva.hora_fin > hora_inicio_dt,
-            Reserva.id_estado != 3  # No considerar solicitudes "Espera de Aprobacion"
-        ).first()
+        # Validar que los campos no estén vacíos
+        if not fecha or not horario or not descripcion:
+            flash('Error: Todos los campos son obligatorios.', 'danger')
+            return render_template('reservas/agendar_salon.html')
 
-        if conflicto:
-            flash("El salón ya está reservado en ese horario. Por favor, elige otra fecha o franja horaria.", "danger")
-            return redirect(url_for('agendar_salon'))
+        # Validar que la descripción no supere los 300 caracteres
+        if len(descripcion) > 300:
+            flash('Error: La descripción no puede superar los 300 caracteres.', 'danger')
+            return render_template('reservas/agendar_salon.html')
 
-        # Si no hay conflicto, crear la solicitud
-        nueva_solicitud = Reserva(
-            id_usuario=current_user.id,
-            fecha=fecha_dt,
-            hora_inicio=hora_inicio_dt,
-            hora_fin=hora_fin_dt,
-            id_estado=1  # Estado "Pendiente"
+        # Validar que la fecha y el horario no estén ocupados (evitar duplicados)
+        reserva_existente = Reserva.query.filter_by(fecha=fecha, horario=horario).first()
+        if reserva_existente:
+            flash('Error: La fecha y el horario ya están reservados. Por favor elige otra fecha u horario.', 'danger')
+            return render_template('reservas/agendar_salon.html')
+
+
+       # Crear la nueva reserva
+        nueva_reserva = Reserva(
+            usuario_id=current_user.id,
+            fecha=fecha,
+            horario=horario,
+            descripcion=descripcion,
+            estado=1
         )
-        db.session.add(nueva_solicitud)
+        db.session.add(nueva_reserva)
         db.session.commit()
 
         # Generar factura por el uso del salón (ejemplo: $50.000)
         monto_salon = 50000
         nueva_factura = Facturas(
-            id_solicitud=nueva_solicitud.id,
+            id_solicitud=nueva_reserva.id,
             id_usuario=current_user.id,
             monto=monto_salon,
             fecha_emision=datetime.now()
@@ -72,43 +77,82 @@ def agendar_salon():
     return render_template('reservas/agendar_salon.html')
 
 
-# Ruta donde se guardarán los PDFs
-FACTURAS_DIR = "static/facturas"
-os.makedirs(FACTURAS_DIR, exist_ok=True)
-
-def generar_factura(usuario, reserva, monto):
-    """Genera un PDF con la factura de la reserva del salón comunal."""
-    archivo_pdf = os.path.join(FACTURAS_DIR, f"factura_{reserva.id}.pdf")
-    c = canvas.Canvas(archivo_pdf, pagesize=letter)
+@reserva_bp.route('/descargar_factura/<int:id>', methods=['GET'])
+@login_required
+def descargar_factura(id):
+    factura = Facturas.query.get_or_404(id)
     
-    # Agregar título y datos
+    # Generar la factura en PDF
+    filepath = generar_factura_pdf(factura)
+    
+    if os.path.exists(filepath):
+        return send_file(filepath, as_attachment=True)
+    else:
+        flash("Error al generar la factura.", "danger")
+        return redirect(url_for('reserva.mis_agendas'))
+
+
+def generar_factura_pdf(factura):
+    filename = f"factura_{factura.id}.pdf"
+    #filepath = os.path.join("static\facturas", filename)
+    filepath = f"static\facturas\{filename}"
+
+    c = canvas.Canvas(filepath, pagesize=letter)
+    width, height = letter
+
+    # Agregar encabezado
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(200, 750, "Factura - Conjunto Residencial XYZ")
-    
-    c.setFont("Helvetica", 12)
-    c.drawString(100, 720, f"Nombre: {usuario.nombre}")
-    c.drawString(100, 700, f"Casa: {usuario.id_casa}")
-    c.drawString(100, 680, f"Fecha de reserva: {reserva.fecha}")
-    c.drawString(100, 660, f"Hora: {reserva.hora_inicio} - {reserva.hora_fin}")
-    c.drawString(100, 640, f"Valor a pagar: ${monto}")
+    c.drawString(200, height - 50, "Factura de Pago - Conjunto Residencial")
 
-    # Agregar código de barras con el ID de la reserva
-    barcode = code128.Code128(str(reserva.id), barHeight=20, barWidth=1.2)
-    barcode.drawOn(c, 200, 500)
+    # Agregar información del usuario
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 100, f"Usuario: {factura.usuario.nombre}")
+    c.drawString(50, height - 120, f"Casa: {factura.usuario.casa.numero}")
+    c.drawString(50, height - 140, f"Valor a Pagar: ${factura.monto:.2f}")
+
+    # Generar el código de barras (Convertido correctamente)
+    barcode_value = str(factura.id)
+    barcode = code128.Code128(barcode_value, barHeight=40, barWidth=1.2)
+
+    # Dibujar el código de barras directamente en el PDF
+    barcode.drawOn(c, 200, height - 250)
 
     # Guardar el PDF
+    c.showPage()
     c.save()
-    return archivo_pdf
 
-@reserva_bp.route('/descargar_factura/<int:id>', methods=['POST'])
-@login_required
-def descargar_factura(reserva_id):
-    """Permite descargar la factura de una reserva."""
-    factura_path = os.path.join(FACTURAS_DIR, f"factura_{reserva_id}.pdf")
-    if os.path.exists(factura_path):
-        return send_file(factura_path, as_attachment=True)
-    return "Factura no encontrada", 404
- 
+    return filepath
+
+def generar_factura_pdf(factura):
+    filename = f"factura_{factura.id}.pdf"
+    #filepath = os.path.join("static\facturas", filename)
+    filepath = f"static\facturas\{filename}"
+
+    c = canvas.Canvas(filepath, pagesize=letter)
+    width, height = letter
+
+    # Agregar encabezado
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(200, height - 50, "Factura de Pago - Conjunto Residencial")
+
+    # Agregar información del usuario
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 100, f"Usuario: {factura.usuario.nombre}")
+    c.drawString(50, height - 120, f"Casa: {factura.usuario.casa.numero}")
+    c.drawString(50, height - 140, f"Valor a Pagar: ${factura.monto:.2f}")
+
+    # Generar el código de barras (Convertido correctamente)
+    barcode_value = str(factura.id)
+    barcode = code128.Code128(barcode_value, barHeight=40, barWidth=1.2)
+
+    # Dibujar el código de barras directamente en el PDF
+    barcode.drawOn(c, 200, height - 250)
+
+    # Guardar el PDF
+    c.showPage()
+    c.save()
+
+    return filepath
 
 @reserva_bp.route('/editar_reserva/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -117,26 +161,25 @@ def editar_reserva(id):
     agenda = Reserva.query.get_or_404(id)
 
     if request.method == 'POST':
-        fecha = request.form['fecha']
-        hora_inicio = request.form['hora_inicio']
-        hora_fin = request.form['hora_fin']
+        nueva_fecha = request.form['fecha']
+        nuevo_horario = request.form['horario']
+        nueva_descripcion = request.form['descripcion']
 
-        # Validar que la nueva fecha y hora no esté ocupada
-        conflicto = Reserva.query.filter(
-            Reserva.fecha == fecha,
-            Reserva.hora_inicio < hora_fin,
-            Reserva.hora_fin > hora_inicio,
-            Reserva.id != id,
-            Reserva.id_estado != 3
+        # Verificar si ya existe una reserva en la misma fecha y horario (excepto la actual)
+        reserva_existente = Reserva.query.filter(
+            Reserva.fecha == nueva_fecha,
+            Reserva.horario == nuevo_horario,
+            Reserva.id != agenda.id  # Excluir la reserva actual
         ).first()
 
-        if conflicto:
-            flash("El salón ya está reservado en ese horario. Elige otro.", "danger")
-            return redirect(url_for('editar_reserva', id=id))
+        if reserva_existente:
+            flash('Error: La fecha y el horario ya están reservados. Por favor elige otra fecha u horario.', 'danger')
+            return render_template('reservas/editar_agenda.html', agenda=agenda)
 
-        agenda.fecha = fecha
-        agenda.hora_inicio = hora_inicio
-        agenda.hora_fin = hora_fin
+        # Actualizar los valores de la reserva
+        agenda.fecha = nueva_fecha
+        agenda.horario = nuevo_horario
+        agenda.descripcion = nueva_descripcion
         db.session.commit()
 
         flash("Reserva actualizada correctamente.", "success")

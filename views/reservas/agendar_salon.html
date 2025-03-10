@@ -12,17 +12,28 @@
   {% endif %}
 {% endwith %}
 
-<form method="POST">
-    <label for="fecha">Fecha de uso:</label>
-    <input type="date" name="fecha" required>
+<form method="POST" enctype="multipart/form-data">
+  <div class="mb-3">
+      <label for="fecha" class="form-label">Fecha de la Reserva</label>
+      <input type="date" class="form-control" id="fecha" name="fecha" required>
+  </div>
 
-    <label for="hora_inicio">Hora de inicio:</label>
-    <input type="time" name="hora_inicio" required>
+  <div class="mb-3">
+      <label for="horario" class="form-label">Horario</label>
+      <select class="form-control" id="horario" name="horario" required>
+          <option value="Diurno">Diurno (8am - 3pm)</option>
+          <option value="Nocturno">Nocturno (3pm - 8pm)</option>
+      </select>
+  </div>
 
-    <label for="hora_fin">Hora de finalización:</label>
-    <input type="time" name="hora_fin" required>
+  <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción (máx. 300 caracteres)</label>
+      <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="300" required></textarea>
+  </div>
 
-    <button type="submit">Enviar Solicitud</button>
+
+  <button type="submit" class="btn btn-primary">Agendar</button>
+  <a href="{{ url_for('reserva.mis_agendas') }}" class="btn btn-secondary">Cancelar</a>
 </form>
 
 {% endblock %}

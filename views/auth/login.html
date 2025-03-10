@@ -3,6 +3,14 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <p class="{{ category }}">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
     <div class="col-md-4 offset-md-4">
         <h2 class="text-center">Iniciar Sesión</h2>
         <form action="/login" method="POST">
