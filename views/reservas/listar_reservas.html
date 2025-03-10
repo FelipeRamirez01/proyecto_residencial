@@ -33,8 +33,8 @@
                 <td>{{ reserva.id }}</td>
                 <td>{{ reserva.usuario.nombre }}</td>
                 <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.hora_inicio }}</td>
-                <td>{{ reserva.hora_fin }}</td>
+                <td>{{ reserva.horario }}</td>
+                <td>{{ reserva.descripcion }}</td>
                 <td><span class="badge {% if reserva.estado == 'Pendiente' %}bg-warning{% elif reserva.estado == 'Aprobado' %}bg-success{% else %}bg-secondary{% endif %}">
                     {{ reserva.estado.nombre }}</span>
                 </td>

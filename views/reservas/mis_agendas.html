@@ -18,16 +18,16 @@
 <table border="1">
     <tr>
         <th>Fecha</th>
-        <th>Hora Inicio</th>
-        <th>Hora Fin</th>
+        <th>Horario</th>
+        <th>Descripcion</th>
         <th>Estado</th>
         <th>Acciones</th>
     </tr>
     {% for agenda in agendas %}
     <tr>
         <td>{{ agenda.fecha }}</td>
-        <td>{{ agenda.hora_inicio }}</td>
-        <td>{{ agenda.hora_fin }}</td>
+        <td>{{ agenda.horario}}</td>
+        <td>{{ agenda.descripcion }}</td>
         <td>
             {% if agenda.id_estado == 1 %}
                 Pendiente
@@ -50,10 +50,13 @@
             <form method="POST" action="{{ url_for('reserva.descargar_factura', id=agenda.id) }}" style="display:inline;">
                 <button type="submit">Generar Factura</button>
             </form>
+            <a href="{{ url_for('reserva.descargar_factura', id=agenda.id) }}" class="btn btn-primary">
+                Descargar Factura
+            </a>
             
             {% if agenda.id_estado == 1 %}
                 <form method="POST" action="{{ url_for('reserva.subir_comprobante', id=agenda.id) }}" enctype="multipart/form-data" style="display:inline;">
-                    <input type="file" name="comprobante" required>
+                    <input type="file" name="comprobante" accept=".pdf,.jpg,.png,.jpeg" required>
                     <button type="submit">Subir Comprobante</button>
                 </form>
             {% endif %}
